@@ -1,0 +1,126 @@
+package com.vanguard.esf.camnotificationbatch;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.internal.stubbing.defaultanswers.ForwardsInvocations;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.vanguard.esf.cam.notification.dto.BuildItem;
+import com.vanguard.esf.cam.notification.dto.ProjectItem;
+import com.vanguard.esf.cam.notification.utils.DynamoDbUtils;
+import com.vanguard.esf.cam.notification.utils.PostgresUtils;
+
+public class CamNotificationBatchApplicationTests {
+
+	private DynamoDBMapper mapper = Mockito.mock(DynamoDBMapper.class);
+
+	@Mock
+	private PaginatedQueryList<Object> queryResult;
+
+	@InjectMocks
+	private DynamoDbUtils dynamoDbUtils;
+	private List<BuildItem> buildItems = new ArrayList<>();
+	
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
+
+		Set<String> mitters1 = new HashSet<>();
+		Set<String> mitters2 = new HashSet<>();
+
+		mitters1.add("jonathan_levine@vanguard.com");
+		mitters1.add("foobar@vanguard.com");
+		mitters2.add("jonathan_levine@vanguard.com");
+
+		// Multiple builds returned of the same project
+		buildItems.add(BuildItem.builder().id("bamboo#FOO").date("123456").appId("FOOBAR").lob("RET").snowAppId("FOO")
+				.committers(mitters1).name("FOOBAR").calculatedScore(975).build());
+		buildItems.add(BuildItem.builder().id("bamboo#FOO").date("456768").calculatedScore(975).appId("FOOBAR").lob("RET").snowAppId("FOO")
+				.committers(mitters2).name("FOOBAR").build());
+		buildItems.add(BuildItem.builder().id("bamboo#BAR").date("456768").calculatedScore(1000).appId("BAR1").lob("CTO").snowAppId("BAR")
+				.committers(mitters2).name("BAR").build());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testGetProjectList() {
+		ProjectItem projectItem = new ProjectItem();
+		projectItem.setId("projects");
+
+		HashMap<String, AttributeValue> plans = new HashMap<>();
+		plans.put("FOO", new AttributeValue().withS("FOOBAR"));
+		plans.put("EXM", new AttributeValue().withS("EXEMPLAR-WEBAPP"));
+		plans.put("EXWSS", new AttributeValue().withS("EXEMPLAR-WEBSERVICE"));
+		projectItem.setProjects(plans);
+
+		List<ProjectItem> projectItems = new ArrayList<>();
+		projectItems.add(projectItem);
+
+		PaginatedQueryList<ProjectItem> paginatedQueryList = Mockito.mock(PaginatedQueryList.class,
+				Mockito.withSettings().defaultAnswer(new ForwardsInvocations(projectItems)));
+
+		Mockito.when(mapper.query(Mockito.eq(ProjectItem.class), Mockito.any(DynamoDBQueryExpression.class)))
+				.thenReturn(paginatedQueryList);
+
+		HashMap<String, AttributeValue> results = dynamoDbUtils.getProjectList();
+		assertEquals(results.get("EXM").getS(), "EXEMPLAR-WEBAPP");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testGetBuildItem() {
+		PaginatedQueryList<BuildItem> paginatedQueryList = Mockito.mock(PaginatedQueryList.class,
+				Mockito.withSettings().defaultAnswer(new ForwardsInvocations(buildItems)));
+
+		Mockito.when(mapper.query(Mockito.eq(BuildItem.class), Mockito.any(DynamoDBQueryExpression.class)))
+				.thenReturn(paginatedQueryList);
+		List<BuildItem> results = dynamoDbUtils.getBuildsByDate("bamboo#FOO");
+		assertEquals(results.size(), 2);
+	}
+	
+	@Test
+	public void testCommitGroupBy() {
+		Map<Set<String>, List<BuildItem>> map = buildItems.stream()
+				.collect(Collectors.groupingBy(BuildItem::getCommitters, Collectors.toList()));
+		Map<String, List<BuildItem>> result = new HashMap<>();
+		map.forEach((k, v) -> {
+			k.stream().distinct().collect(Collectors.toList());
+			for (String commitor : k) {
+				if (result.get(commitor) == null) {
+					result.put(commitor, v);
+				} else {
+					List<BuildItem> temp = result.get(commitor);
+					temp.addAll(v);
+					result.put(commitor, temp);
+				}
+			}
+		});
+		
+		Map<String, List<BuildItem>> finalMap = result.entrySet().stream().collect(Collectors.toMap(p -> (String) p.getKey(),
+				p -> p.getValue().stream().distinct().collect(Collectors.toList())));
+		
+		finalMap.forEach((dev,build) -> { 
+			System.out.println(dev + ": [");
+			build.forEach(item -> System.out.println(item.getName() + " : " + item.getCalculatedScore()));
+			System.out.println("]");
+		});
+	}
+}
