@@ -3,3 +3,5 @@ https://teams.microsoft.com/l/meetup-join/19:meeting_MWNiOTBjMDItNjE2ZS00ZjllLTk
 https://teams.microsoft.com/l/meetup-join/19:meeting_NTI5Y2RkOGUtODNiNS00ZmI3LTg4NTItY2NlMTJiZjBjZmRj@thread.v2/0?context=%7B%22Tid%22:%22d3a74ac8-efe4-4fe8-b707-b1bf8c6a25bd%22,%22Oid%22:%22e7b39b78-ae65-4340-ab2c-f0cbe0792671%22%7D
 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html
+
+https://grafana.com/docs/grafana/latest/datasources/elasticsearch/
