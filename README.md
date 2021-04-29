@@ -5,3 +5,141 @@ https://teams.microsoft.com/l/meetup-join/19:meeting_NTI5Y2RkOGUtODNiNS00ZmI3LTg
 https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html
 
 https://grafana.com/docs/grafana/latest/datasources/elasticsearch/
+
+ {
+                "_index": "cam",
+                "_type": "_doc",
+                "_id": "N-JX6XgBsebTdXlqFMQr",
+                "_score": null,
+                "_source": {
+                    "name": "RET.custom-view.full-load-kinesis",
+                    "id": 556939,
+                    "totalScore": 920,
+                    "scores": {
+                        "BallastPoint Vulnerabilities": [
+                            {
+                                "name": "Low",
+                                "weight": 2,
+                                "value": 0
+                            },
+                            {
+                                "name": "Very Low",
+                                "weight": 2,
+                                "value": 0
+                            },
+                            {
+                                "name": "Medium",
+                                "weight": 2,
+                                "value": 0
+                            },
+                            {
+                                "name": "High",
+                                "weight": 2,
+                                "value": 0
+                            },
+                            {
+                                "name": "Critical",
+                                "weight": 5,
+                                "value": 0
+                            },
+                            {
+                                "name": "Critical",
+                                "weight": 2,
+                                "value": 0
+                            }
+                        ],
+                        "Checkmarx Vulnerabilities": [
+                            {
+                                "name": "Critical",
+                                "weight": 2,
+                                "value": 0
+                            },
+                            {
+                                "name": "High",
+                                "weight": 2,
+                                "value": 0
+                            },
+                            {
+                                "name": "Low",
+                                "weight": 2,
+                                "value": 0
+                            },
+                            {
+                                "name": "Medium",
+                                "weight": 2,
+                                "value": 0
+                            }
+                        ],
+                        "Inherent Application Risk": [
+                            {
+                                "name": "Personally Identifiable Information (PII)",
+                                "weight": 20,
+                                "value": 1
+                            },
+                            {
+                                "name": "Highly Confidential Data",
+                                "weight": 20,
+                                "value": 1
+                            },
+                            {
+                                "name": "Critical Security Functionality",
+                                "weight": 20,
+                                "value": 1
+                            },
+                            {
+                                "name": "Externally-Accessible",
+                                "weight": 20,
+                                "value": 1
+                            }
+                        ],
+                        "Builds": [
+                            {
+                                "name": "Broken Builds",
+                                "weight": 1,
+                                "value": 0
+                            }
+                        ],
+                        "Nexus Vulnerabilities": [
+                            {
+                                "name": "Critical",
+                                "weight": 3,
+                                "value": 0
+                            },
+                            {
+                                "name": "Medium",
+                                "weight": 3,
+                                "value": 0
+                            },
+                            {
+                                "name": "Blocker",
+                                "weight": 3,
+                                "value": 0
+                            },
+                            {
+                                "name": "Low",
+                                "weight": 1,
+                                "value": 0
+                            }
+                        ],
+                        "Automated Security Test Cases": [
+                            {
+                                "name": "Automated Security Test Cases Compliance",
+                                "weight": 3,
+                                "value": 0
+                            }
+                        ],
+                        "Training credits": [
+                            {
+                                "name": "Training credits",
+                                "weight": 15,
+                                "value": 0
+                            }
+                        ]
+                    },
+                    "_timestamp": "2021-04-19T08:55:01.405"
+                },
+                "sort": [
+                    1618822501405,
+                    355
+                ]
+            }
